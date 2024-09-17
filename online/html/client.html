@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .search-container {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-box-container {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ccc;
+            border-radius: 30px 0 0 30px;
+            outline: none;
+            font-size: 16px;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .search-box:focus {
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            border-color: #007bff;
+        }
+
+        .search-button {
+            padding: 12px 24px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 0 30px 30px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .search-button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-container {
+            margin-top: 10px;
+            width: 400px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .search-result-container {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-result-card {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-result-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .search-result-description {
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .search-result-content {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .search-result-link {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .search-result-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="search-container">
+        <div class="search-box-container">
+            <input type="text" placeholder="请输入搜索内容..." class="search-box" id="searchBox">
+            <button class="search-button" id="searchButton">搜索</button>
+        </div>
+        <div class="suggestions-container" id="suggestionsContainer"></div>
+        <div class="search-result-container" id="searchResultContainer"></div>
+    </div>
+
+    <script>
+        const searchBox = document.getElementById('searchBox');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
+        const searchButton = document.getElementById('searchButton');
+        const searchResultContainer = document.getElementById('searchResultContainer');
+
+        searchBox.addEventListener('input', function() {
+            let query = this.value.trim();
+            if (query) {
+                sendQuery(query);
+            } else {
+                clearSuggestions();
+            }
+        });
+
+        searchButton.addEventListener('click', function() {
+            let searchQuery = searchBox.value.trim();
+            if (searchQuery) {
+                clearSuggestions();
+                performSearch(searchQuery);
+            }
+        });
+
+        function sendQuery(query) {
+            const url = `/suggestions`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displaySuggestions(data.suggestions);
+            })
+            .catch(error => {
+                console.error('请求失败:', error);
+                clearSuggestions();
+            });
+        }
+
+        function performSearch(query) {
+            const url = `/search`;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ search: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displaySearchResults(data.result);
+            })
+            .catch(error => {
+                console.error('搜索请求失败:', error);
+            });
+        }
+
+        function displaySuggestions(suggestions) {
+            suggestionsContainer.innerHTML = '';
+
+            if (suggestions && suggestions.length > 0) {
+                suggestions.forEach(suggestion => {
+                    const suggestionItem = document.createElement('div');
+                    suggestionItem.classList.add('suggestion-item');
+                    suggestionItem.textContent = suggestion;
+                    suggestionItem.addEventListener('click', () => {
+                        searchBox.value = suggestion;
+                        clearSuggestions();
+                    });
+                    suggestionsContainer.appendChild(suggestionItem);
+                });
+
+                suggestionsContainer.style.display = 'block';
+            } else {
+                clearSuggestions();
+            }
+        }
+
+        function displaySearchResults(results) {
+            searchResultContainer.innerHTML = '';
+
+            if (results && results.length > 0) {
+                results.forEach(result => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(result, 'text/xml');
+
+                    const title = xmlDoc.getElementsByTagName('title')[0].textContent;
+                    const link = xmlDoc.getElementsByTagName('link')[0].textContent;
+                    const description = xmlDoc.getElementsByTagName('description')[0].textContent;
+                    const content = xmlDoc.getElementsByTagName('content')[0].textContent;
+
+                    const resultCard = document.createElement('div');
+                    resultCard.classList.add('search-result-card');
+
+                    const titleElement = document.createElement('div');
+                    titleElement.classList.add('search-result-title');
+                    titleElement.textContent = title;
+
+                    const descriptionElement = document.createElement('div');
+                    descriptionElement.classList.add('search-result-description');
+                    descriptionElement.textContent = description;
+
+                    const contentElement = document.createElement('div');
+                    contentElement.classList.add('search-result-content');
+                    contentElement.textContent = content;
+
+                    const linkElement = document.createElement('a');
+                    linkElement.classList.add('search-result-link');
+                    linkElement.href = link;
+                    linkElement.textContent = link;
+
+                    resultCard.appendChild(titleElement);
+                    resultCard.appendChild(descriptionElement);
+                    resultCard.appendChild(contentElement);
+                    resultCard.appendChild(linkElement);
+
+                    searchResultContainer.appendChild(resultCard);
+                });
+            }
+        }
+
+        function clearSuggestions() {
+            suggestionsContainer.innerHTML = '';
+            suggestionsContainer.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

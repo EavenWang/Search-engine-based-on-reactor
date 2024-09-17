@@ -1,0 +1,35 @@
+{
+    "threadNum":4,
+    "queueSize":10,
+    "ip":"192.168.44.129",
+    "port":8080,
+    "redisIp":"127.0.0.1",
+    "redisPort":6379,
+    "stopWordsOfEnglish":"/home/mylinux/homework/SearchEngineOnReactor/material/yuliao/stop_words_eng.txt",
+    "stopWordsOfChinese":"/home/mylinux/homework/SearchEngineOnReactor/material/yuliao/stop_words_zh.txt",
+    
+    "ChineseYuliao":"/home/mylinux/homework/SearchEngineOnReactor/material/yuliao/art",
+    "EnglishYuliao":"/home/mylinux/homework/SearchEngineOnReactor/material/yuliao/english.txt",
+    "webs":"/home/mylinux/homework/SearchEngineOnReactor/material/webs",
+
+    "ChineseDict":"/home/mylinux/homework/SearchEngineOnReactor/data/ChineseDict.dat",
+    "EnglishDict":"/home/mylinux/homework/SearchEngineOnReactor/data/EnglishDict.dat",
+    "dictIndex":"/home/mylinux/homework/SearchEngineOnReactor/data/dictIndex.dat",
+    "invertIndex":"/home/mylinux/homework/SearchEngineOnReactor/data/invertIndex.dat",
+
+    "newoffset":"/home/mylinux/homework/SearchEngineOnReactor/data/newoffset.dat",
+    "newripepage":"/home/mylinux/homework/SearchEngineOnReactor/data/newripepage.dat",
+    "jieba":{
+        "dict":"/home/mylinux/homework/SearchEngineOnReactor/library/cppjieba/dict/jieba.dict.utf8",
+        "hmm":"/home/mylinux/homework/SearchEngineOnReactor/library/cppjieba/dict/hmm_model.utf8",
+        "user":"/home/mylinux/homework/SearchEngineOnReactor/library/cppjieba/dict/user.dict.utf8",
+        "idf":"/home/mylinux/homework/SearchEngineOnReactor/library/cppjieba/dict/idf.utf8",
+        "stop":"/home/mylinux/homework/SearchEngineOnReactor/library/cppjieba/dict/stop_words.utf8"
+    },
+    "simhash":{
+        "dict":"/home/mylinux/homework/SearchEngineOnReactor/library/simhash/dict/jieba.dict.utf8",
+        "hmm":"/home/mylinux/homework/SearchEngineOnReactor/library/simhash/dict/hmm_model.utf8",
+        "idf":"/home/mylinux/homework/SearchEngineOnReactor/library/simhash/dict/idf.utf8",
+        "stop":"/home/mylinux/homework/SearchEngineOnReactor/library/simhash/dict/stop_words.utf8"
+    }
+}
